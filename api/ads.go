@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"rental-ads-server/model"
 	"rental-ads-server/utils"
+	"strconv"
 )
 
 func AdsPing(c *gin.Context) {
@@ -48,14 +49,26 @@ func AdsSave(c *gin.Context) {
 }
 
 func AdsList(c *gin.Context) {
+	curPage, _ := strconv.Atoi(c.Query("page_number"))
+	pageSize, _ := strconv.Atoi(c.Query("size"))
+
+	var total int64 = 0
+	model.DB.Model(&model.Ad{}).Count(&total)
+
 	var ads []model.Ad
-	model.DB.Find(&ads)
+	res := model.DB.Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
+	if res.Error != nil {
+		c.JSON(500, gin.H{
+			"message": "Internal Server Error: Failed to get ads",
+		})
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"message": "Get ads success",
 		"obj": gin.H{
 			"list":       ads,
-			"totalPages": 1,
+			"totalPages": total/int64(pageSize) + 1,
 		},
 	})
 }
