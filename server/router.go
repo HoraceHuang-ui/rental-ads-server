@@ -16,5 +16,12 @@ func NewRouter() *gin.Engine {
 		user.GET("/get", api.UserGet)
 	}
 
+	ads := r.Group("/ads")
+	{
+		ads.GET("/ping", api.AdsPing)
+		ads.POST("/save", api.AdsSave)
+		ads.GET("/list", api.AdsList)
+	}
+
 	return r
 }

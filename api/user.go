@@ -62,6 +62,14 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	user, err := model.FindUserByUsername(user.Username)
+	if err == nil {
+		c.JSON(400, gin.H{
+			"message": "Username already exists",
+		})
+		return
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -105,7 +113,7 @@ func UserGet(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Get user success",
-		"data": gin.H{
+		"obj": gin.H{
 			"username":     user.Username,
 			"role":         user.Role,
 			"id":           user.ID,

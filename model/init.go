@@ -14,5 +14,7 @@ func DBInit(connString string) {
 	}
 
 	_ = db.AutoMigrate(&User{})
+	_ = db.AutoMigrate(&Ad{})
+
 	DB = db
 }

@@ -12,6 +12,7 @@ func GenerateToken(user model.User) (string, error) {
 
 	claims := jwt.MapClaims{
 		"username":  user.Username,
+		"userId":    user.ID,
 		"expiresAt": time.Now().Add(time.Hour * 24).Unix(),
 	}
 
