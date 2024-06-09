@@ -13,6 +13,7 @@ func NewRouter() *gin.Engine {
 		user.GET("/ping", api.UserPing)
 		user.POST("/register", api.UserRegister)
 		user.POST("/login", api.UserLogin)
+		user.GET("/get", api.UserGet)
 	}
 
 	return r

@@ -83,3 +83,34 @@ func UserRegister(c *gin.Context) {
 		"message": "Register success",
 	})
 }
+
+func UserGet(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	expired, claims := myUtils.CheckExpired(token)
+	if expired {
+		c.JSON(401, gin.H{
+			"message": "Token expired",
+		})
+		return
+	}
+
+	username := claims["username"].(string)
+	user, err := model.FindUserByUsername(username)
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "User not found",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Get user success",
+		"data": gin.H{
+			"username":     user.Username,
+			"role":         user.Role,
+			"id":           user.ID,
+			"email":        user.Email,
+			"avatarBase64": user.AvatarBase64,
+		},
+	})
+}
