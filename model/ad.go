@@ -12,6 +12,7 @@ type Ad struct {
 	Description string
 
 	UserID uint
+	Images []Image `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // TODO 前端 adId 改成 ID

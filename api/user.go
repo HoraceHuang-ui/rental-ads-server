@@ -102,7 +102,10 @@ func UserGet(c *gin.Context) {
 		return
 	}
 
-	username := claims["username"].(string)
+	username := ""
+	if username = c.Query("username"); username == "" {
+		username = claims["username"].(string)
+	}
 	user, err := model.FindUserByUsername(username)
 	if err != nil {
 		c.JSON(404, gin.H{

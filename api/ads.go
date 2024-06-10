@@ -56,7 +56,7 @@ func AdsList(c *gin.Context) {
 	model.DB.Model(&model.Ad{}).Count(&total)
 
 	var ads []model.Ad
-	res := model.DB.Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
+	res := model.DB.Order("ID DESC").Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
 	if res.Error != nil {
 		c.JSON(500, gin.H{
 			"message": "Internal Server Error: Failed to get ads",
@@ -70,5 +70,23 @@ func AdsList(c *gin.Context) {
 			"list":       ads,
 			"totalPages": total/int64(pageSize) + 1,
 		},
+	})
+}
+
+func AdsGet(c *gin.Context) {
+	adId, _ := strconv.Atoi(c.Query("ad_id"))
+
+	var ad model.Ad
+	res := model.DB.First(&ad, adId)
+	if res.Error != nil {
+		c.JSON(404, gin.H{
+			"message": "Ad not found",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Get ad success",
+		"obj":     ad,
 	})
 }

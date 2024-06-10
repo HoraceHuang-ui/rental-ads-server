@@ -8,6 +8,8 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 
+	r.Static("/static", "./static")
+
 	user := r.Group("/user")
 	{
 		user.GET("/ping", api.UserPing)
@@ -21,6 +23,14 @@ func NewRouter() *gin.Engine {
 		ads.GET("/ping", api.AdsPing)
 		ads.POST("/save", api.AdsSave)
 		ads.GET("/list", api.AdsList)
+		ads.GET("/get", api.AdsGet)
+	}
+
+	image := r.Group("/image")
+	{
+		image.GET("/ping", api.ImagePing)
+		image.POST("/save", api.ImageSave)
+		image.GET("/ad/first", api.ImageFirstByAd)
 	}
 
 	return r
