@@ -31,6 +31,7 @@ func NewRouter() *gin.Engine {
 		image.GET("/ping", api.ImagePing)
 		image.POST("/save", api.ImageSave)
 		image.GET("/ad/first", api.ImageFirstByAd)
+		image.GET("/ad/list", api.ImageListByAd)
 	}
 
 	return r

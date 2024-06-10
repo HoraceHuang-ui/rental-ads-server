@@ -67,3 +67,33 @@ func ImageFirstByAd(c *gin.Context) {
 		},
 	})
 }
+
+func ImageListByAd(c *gin.Context) {
+	adId := c.Query("ad_id")
+	var images []model.Image
+	res := model.DB.Where("ad_id = ?", adId).Find(&images)
+	if res.RowsAffected == 0 {
+		c.JSON(200, gin.H{
+			"message": "No image records",
+			"obj":     nil,
+		})
+		return
+	}
+
+	var uris []string
+	for _, image := range images {
+		uri, err := model.EncodeBase64(image.ID)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": "Internal Server Error: Failed to encode image",
+			})
+			return
+		}
+		uris = append(uris, uri)
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Images found",
+		"obj":     uris,
+	})
+}
