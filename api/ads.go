@@ -64,10 +64,66 @@ func AdsList(c *gin.Context) {
 		return
 	}
 
+	var resList []gin.H
+	for _, ad := range ads {
+		resList = append(resList, gin.H{
+			"adId":        ad.ID,
+			"title":       ad.Title,
+			"description": ad.Description,
+			"address":     ad.Address,
+			"userId":      ad.UserID,
+		})
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Get ads success",
 		"obj": gin.H{
-			"list":       ads,
+			"list":       resList,
+			"totalPages": total/int64(pageSize) + 1,
+		},
+	})
+}
+
+func AdsListSelf(c *gin.Context) {
+	curPage, _ := strconv.Atoi(c.Query("page_number"))
+	pageSize, _ := strconv.Atoi(c.Query("size"))
+
+	expired, claims := utils.CheckExpired(c.GetHeader("Authorization"))
+	if expired {
+		c.JSON(401, gin.H{
+			"message": "Token expired",
+		})
+		return
+	}
+	username := claims["username"].(string)
+
+	var total int64 = 0
+	model.DB.Model(&model.Ad{}).Where("username = ?", username).Count(&total)
+
+	var ads []model.Ad
+	res := model.DB.Order("ID DESC").Where("username = ?", username).Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
+	if res.Error != nil {
+		c.JSON(500, gin.H{
+			"message": "Internal Server Error: Failed to get ads",
+		})
+		return
+	}
+
+	var resList []gin.H
+	for _, ad := range ads {
+		resList = append(resList, gin.H{
+			"adId":        ad.ID,
+			"title":       ad.Title,
+			"description": ad.Description,
+			"address":     ad.Address,
+			"userId":      ad.UserID,
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Get ads success",
+		"obj": gin.H{
+			"list":       resList,
 			"totalPages": total/int64(pageSize) + 1,
 		},
 	})
@@ -85,8 +141,16 @@ func AdsGet(c *gin.Context) {
 		return
 	}
 
+	resObj := gin.H{
+		"adId":        ad.ID,
+		"title":       ad.Title,
+		"description": ad.Description,
+		"address":     ad.Address,
+		"userId":      ad.UserID,
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Get ad success",
-		"obj":     ad,
+		"obj":     resObj,
 	})
 }

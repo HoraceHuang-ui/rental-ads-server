@@ -23,6 +23,7 @@ func NewRouter() *gin.Engine {
 		ads.GET("/ping", api.AdsPing)
 		ads.POST("/save", api.AdsSave)
 		ads.GET("/list", api.AdsList)
+		ads.GET("/list/self", api.AdsListSelf)
 		ads.GET("/get", api.AdsGet)
 	}
 

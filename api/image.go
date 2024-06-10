@@ -25,7 +25,7 @@ func ImageSave(c *gin.Context) {
 	base64 := resp["imageBase64"].(string)
 
 	model.DB.Create(&image)
-	code, obj := model.DecodeAndSave(base64, image.ID)
+	code, obj := model.DecodeAndSave(base64, image.ID, false)
 	if code == 200 {
 		c.JSON(200, gin.H{
 			"message": "Image saved",
@@ -52,7 +52,7 @@ func ImageFirstByAd(c *gin.Context) {
 		return
 	}
 
-	uri, err := model.EncodeBase64(image.ID)
+	uri, err := model.EncodeBase64(image.ID, false)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "Internal Server Error: Failed to encode image",
@@ -82,7 +82,7 @@ func ImageListByAd(c *gin.Context) {
 
 	var uris []string
 	for _, image := range images {
-		uri, err := model.EncodeBase64(image.ID)
+		uri, err := model.EncodeBase64(image.ID, false)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"message": "Internal Server Error: Failed to encode image",

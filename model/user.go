@@ -6,11 +6,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Username     string
-	Email        string
-	AvatarBase64 string
-	Role         string
-	Password     string
+	Username string
+	Email    string
+	Role     string
+	Password string
 
 	Ads []Ad `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
