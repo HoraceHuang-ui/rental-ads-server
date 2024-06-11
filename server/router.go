@@ -16,6 +16,8 @@ func NewRouter() *gin.Engine {
 		user.POST("/register", api.UserRegister)
 		user.POST("/login", api.UserLogin)
 		user.GET("/get", api.UserGet)
+		user.PUT("/update/info", api.UserUpdateInfo)
+		user.PUT("/update/password", api.UserUpdatePassword)
 	}
 
 	ads := r.Group("/ads")

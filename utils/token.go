@@ -4,6 +4,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"rental-ads-server/conf"
 	"rental-ads-server/model"
+	"strconv"
 	"time"
 )
 
@@ -11,8 +12,7 @@ func GenerateToken(user model.User) (string, error) {
 	secret := []byte(conf.Config.JWTSecret)
 
 	claims := jwt.MapClaims{
-		"username":  user.Username,
-		"userId":    user.ID,
+		"userId":    strconv.Itoa(int(user.ID)),
 		"expiresAt": time.Now().Add(time.Hour * 24).Unix(),
 	}
 
@@ -57,8 +57,8 @@ func CheckAdmin(tokenString string) (bool, jwt.MapClaims) {
 		return false, nil
 	}
 
-	username := claims["username"].(string)
-	user, err := model.FindUserByUsername(username)
+	userId := claims["userId"].(string)
+	user, err := model.FindUserByID(userId)
 	if err != nil {
 		return false, nil
 	}

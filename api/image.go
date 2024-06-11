@@ -55,7 +55,7 @@ func ImageFirstByAd(c *gin.Context) {
 	uri, err := model.EncodeBase64(image.ID, false)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"message": "Internal Server Error: Failed to encode image",
+			"message": "Server failed to encode image",
 		})
 		return
 	}
@@ -85,7 +85,7 @@ func ImageListByAd(c *gin.Context) {
 		uri, err := model.EncodeBase64(image.ID, false)
 		if err != nil {
 			c.JSON(500, gin.H{
-				"message": "Internal Server Error: Failed to encode image",
+				"message": "Server failed to encode image",
 			})
 			return
 		}

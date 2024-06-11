@@ -35,8 +35,7 @@ func DecodeAndSave(uri string, id uint, avatar bool) (int, gin.H) {
 	}
 
 	if avatar && len(imageBuffer) > 3*1024*1024 {
-		fmt.Println(int(3*1024*1024*100/len(imageBuffer)) - 1)
-		imageBuffer = compress(imageBuffer, int(3*1024*1024*100/len(imageBuffer))-1)
+		imageBuffer = compress(imageBuffer, 50)
 	}
 
 	_ = os.MkdirAll(fmt.Sprintf("./static/%s", dir), os.ModePerm)
@@ -47,7 +46,9 @@ func DecodeAndSave(uri string, id uint, avatar bool) (int, gin.H) {
 		}
 	}
 
-	return 200, nil
+	return 200, gin.H{
+		"message": "Image saved",
+	}
 }
 
 func EncodeBase64(id uint, avatar bool) (string, error) {

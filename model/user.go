@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type User struct {
@@ -20,7 +21,11 @@ func FindUserByUsername(username string) (User, error) {
 	return user, res.Error
 }
 
-func findUserByID(id uint) (User, error) {
+func FindUserByID(idStr string) (User, error) {
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return User{}, err
+	}
 	var user User
 	res := DB.First(&user, id)
 	return user, res.Error

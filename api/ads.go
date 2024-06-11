@@ -30,12 +30,19 @@ func AdsSave(c *gin.Context) {
 		return
 	}
 	ad.UserID = uint(claims["userId"].(float64))
-	ad.Username = claims["username"].(string)
+	tempUser, err := model.FindUserByID(strconv.Itoa(int(ad.UserID)))
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "User not found",
+		})
+		return
+	}
+	ad.Username = tempUser.Username
 
 	res := model.DB.Create(&ad)
 	if res.Error != nil {
 		c.JSON(500, gin.H{
-			"message": "Internal Server Error: Failed to save ad",
+			"message": "Server failed to save ad",
 		})
 		return
 	}
@@ -56,13 +63,13 @@ func AdsList(c *gin.Context) {
 	model.DB.Model(&model.Ad{}).Count(&total)
 
 	var ads []model.Ad
-	res := model.DB.Order("ID DESC").Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
-	if res.Error != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error: Failed to get ads",
-		})
-		return
-	}
+	model.DB.Order("ID DESC").Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
+	//if res.Error != nil {
+	//	c.JSON(500, gin.H{
+	//		"message": "Server failed to get ads",
+	//	})
+	//	return
+	//}
 
 	var resList []gin.H
 	for _, ad := range ads {
@@ -71,6 +78,7 @@ func AdsList(c *gin.Context) {
 			"title":       ad.Title,
 			"description": ad.Description,
 			"address":     ad.Address,
+			"username":    ad.Username,
 			"userId":      ad.UserID,
 		})
 	}
@@ -95,19 +103,19 @@ func AdsListSelf(c *gin.Context) {
 		})
 		return
 	}
-	username := claims["username"].(string)
+	userId := claims["userId"].(string)
 
 	var total int64 = 0
-	model.DB.Model(&model.Ad{}).Where("username = ?", username).Count(&total)
+	model.DB.Model(&model.Ad{}).Where("user_id = ?", userId).Count(&total)
 
 	var ads []model.Ad
-	res := model.DB.Order("ID DESC").Where("username = ?", username).Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
-	if res.Error != nil {
-		c.JSON(500, gin.H{
-			"message": "Internal Server Error: Failed to get ads",
-		})
-		return
-	}
+	model.DB.Order("ID DESC").Where("user_id = ?", userId).Offset(curPage * pageSize).Limit(pageSize).Find(&ads)
+	//if res.Error != nil {
+	//	c.JSON(500, gin.H{
+	//		"message": "Server failed to get ads",
+	//	})
+	//	return
+	//}
 
 	var resList []gin.H
 	for _, ad := range ads {
@@ -116,6 +124,7 @@ func AdsListSelf(c *gin.Context) {
 			"title":       ad.Title,
 			"description": ad.Description,
 			"address":     ad.Address,
+			"username":    ad.Username,
 			"userId":      ad.UserID,
 		})
 	}
@@ -146,6 +155,7 @@ func AdsGet(c *gin.Context) {
 		"title":       ad.Title,
 		"description": ad.Description,
 		"address":     ad.Address,
+		"username":    ad.Username,
 		"userId":      ad.UserID,
 	}
 
